@@ -30,11 +30,11 @@ while not(attempts >= ATTEMPTS): # halt executuion if attemp cap exceeded (2nd t
     blankName = firstLetter(song[0]) # blank out part of the name of the song
     while not(attempts >= ATTEMPTS): # halt executuion if attemp cap exceeded (1st test)
         if attempts > 0:
-            print('try again')
+            print('Try again.')
         print('Artist: '+song[1])
         print('Song: '+blankName) # display a blanked out song name
-        guess = input() # NEXT: add case redundancy; FUTURE: add fancy overwriting input?
-        if guess == song[0]:
+        guess = input() # FUTURE: add fancy overwriting input?
+        if guess.lower() == song[0].lower():
             print('Well done!')
             break # drop out of loop on correct attempt and pick new song
         else:
