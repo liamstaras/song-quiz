@@ -1,12 +1,21 @@
-### Music quiz for OCR GCSE Computer Science (9-1) ###
-## Copyright 2020 Liam Staras
+#### Music quiz for OCR GCSE Computer Science (9-1) ####
+### Copyright 2020 Liam Staras ###
 
+## initialization
 # import required libraries
 import csv
 import random
 
 # define constants
-ATTEMPTS = 2
+ATTEMPTS = 2 # how many guesses the user gets for each song
+BLANKING = None # what to replace removed characters with in the name
+
+## functions
+# firstLetter function - get the first letter of each word
+def firstLetter(phrase, fill=BLANKING):
+    if fill == None:
+        fill = ''
+    return ' '.join([word[0] + fill*(len(word)-1) for word in phrase.split(' ')])
 
 # read song database from csv
 with open('songs.csv') as csvfile:
@@ -18,11 +27,12 @@ while not(attempts >= ATTEMPTS): # halt executuion if attemp cap exceeded (2nd t
     attempts = 0 # reset counter for each new song
     song = random.choice(songs) # select a random song
     print('Guess the song!')
+    blankName = firstLetter(song[0]) # blank out part of the name of the song
     while not(attempts >= ATTEMPTS): # halt executuion if attemp cap exceeded (1st test)
         if attempts > 0:
             print('try again')
         print('Artist: '+song[1])
-        print('Song: '+song[0]) # NEXT: add routine to obliterate part of the name
+        print('Song: '+blankName) # display a blanked out song name
         guess = input() # NEXT: add case redundancy; FUTURE: add fancy overwriting input?
         if guess == song[0]:
             print('Well done!')
