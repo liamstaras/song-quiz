@@ -5,6 +5,8 @@
 # import required libraries
 import csv
 import random
+import os
+import hashlib
 
 # define constants
 ATTEMPTS = 2 # how many guesses the user gets for each song
@@ -20,6 +22,36 @@ def firstLetter(phrase, fill=BLANKING):
 # read song database from csv
 with open('songs.csv') as csvfile:
     songs = list(csv.reader(csvfile))[1:] # actually read in the songs, skip header row
+
+## main program
+# authentication subsystem
+print('Please provide credentials.')
+with open('users.csv') as csvfile:
+    users = list(csv.reader(csvfile))[1:]
+username = input('Username: ')
+foundUser = False
+for user in users:
+    if user[0] == username:
+        foundUser = True
+        break
+if foundUser: # in this case, the user already exists
+    while True:
+        password = input('Password: ')
+        salt = bytes.fromhex(user[2])
+        hash = hashlib.pbkdf2_hmac('sha256',password.encode('utf-8'),salt,100000)
+        if hash.hex() == user[1]:
+            break
+        else:
+            print('Incorrect password.')
+else: # otherwise, we create a new user
+    print('User not found; creating new user.')
+    password = input('Password: ')
+    salt = os.urandom(32)
+    hash = hashlib.pbkdf2_hmac('sha256',password.encode('utf-8'),salt,100000)
+    with open('users.csv','a') as csvfile:
+        csv.writer(csvfile).writerow([username,hash.hex(),salt.hex(),0])
+del(password)
+
 
 # game routine
 attempts = 0 # set counter to enter while loop [in another programming language, a REPEAT...UNTIL or equivalent loop would be most appropriate as this would not have to be defined twice]
