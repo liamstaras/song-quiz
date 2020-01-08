@@ -41,6 +41,7 @@ if foundUser: # in this case, the user already exists
         salt = bytes.fromhex(user[2]) # get the salt from the database
         hash = hashlib.pbkdf2_hmac('sha256',password.encode('utf-8'),salt,100000) # generate a hash from the password and salt using 100,000 iterations of SHA256
         if hash.hex() == user[1]: # if the generated hash is the same as the stored hash, the password was correct
+            bestScore = user[3] # store the user's best score information
             break # if the password was correct, we're done and the user is authenticated
         else:
             print('Incorrect password.')
@@ -52,8 +53,10 @@ else: # otherwise, we create a new user
     with open('users.csv','a') as csvfile: # open the user database in append mode
         csv.writer(csvfile).writerow([username,hash.hex(),salt.hex(),0]) # write one row to the end of the csv with the username, the hex of the hash and salt, and a best score of 0
 del(password) # delete the password variable - get it out of RAM!
+del(user) # we don't need this any more
 
 # at this point, we have the variable 'username' as the username of the authenticated user and we can begin the game
+# we also have 'bestScore' as the top score for the authenticated user
 
 ## game routine
 attempts = 0 # set counter to enter while loop [in another programming language, a REPEAT...UNTIL or equivalent loop would be most appropriate as this would not have to be defined twice]
