@@ -65,9 +65,13 @@ score = 0 # counter for the user's score
 while not(attempts >= ATTEMPTS): # halt executuion if attempt cap exceeded (2nd test)
     attempts = 0 # reset counter for each new song
     song = random.choice(songs) # select a random song
+    print() # a blank line
     print('Guess the song!')
     blankName = firstLetter(song[0]) # blank out part of the name of the song
     while not(attempts >= ATTEMPTS): # halt executuion if attempt cap exceeded (1st test)
+        print() # a blank line
+        print('Score: '+str(score)+'; High Score: '+str(bestScore))
+        print('Attempt '+str(attempts+1)+'/'+str(ATTEMPTS))
         if attempts > 0:
             print('Try again.') # if the user has still got attempts left, this will be shown
         print('Artist: '+song[1])
