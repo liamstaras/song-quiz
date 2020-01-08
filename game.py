@@ -92,7 +92,7 @@ if score > bestScore:
     print('New high score!!')
     bestScore = score
 
-## write the new best to the database
+## write the new best to the database and display all-time high scores
 # read in all users
 with open('users.csv') as csvfile:
     users = list(csv.reader(csvfile))
@@ -104,3 +104,9 @@ for user in users[1:]:
 # write the array back to the file
 with open('users.csv','w') as csvfile:
     csv.writer(csvfile).writerows(users)
+
+# find maximum scores
+print('HIGH SCORES')
+scorers = [[int(user[3]),user[0]] for user in users[1:]] # get all scores in to a list
+for idx, scorer in enumerate(sorted(scorers,reverse=True)[:5]): # sort the list and select the first five elements
+    print(str(idx+1)+'. '+str(scorer[1])+': '+str(scorer[0])) # display the name and score
