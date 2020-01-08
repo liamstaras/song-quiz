@@ -54,6 +54,7 @@ else: # otherwise, we create a new user
         csv.writer(csvfile).writerow([username,hash.hex(),salt.hex(),0]) # write one row to the end of the csv with the username, the hex of the hash and salt, and a best score of 0
 del(password) # delete the password variable - get it out of RAM!
 del(user) # we don't need this any more
+del(users) # same here
 
 # at this point, we have the variable 'username' as the username of the authenticated user and we can begin the game
 # we also have 'bestScore' as the top score for the authenticated user
@@ -86,3 +87,16 @@ print('You scored: '+str(score))
 if score > bestScore:
     print('New high score!!')
     bestScore = score
+
+## write the new best to the database
+# read in all users
+with open('users.csv') as csvfile:
+    users = list(csv.reader(csvfile))
+# locate and update the user in the array
+for user in users[1:]:
+    if user[0] == username: # comparing each row from the csv
+        user[3] = bestScore # update the best score in the array
+        break # we don't need to check any more users if one is found
+# write the array back to the file
+with open('users.csv','w') as csvfile:
+    csv.writer(csvfile).writerows(users)
