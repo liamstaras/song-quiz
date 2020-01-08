@@ -41,7 +41,7 @@ if foundUser: # in this case, the user already exists
         salt = bytes.fromhex(user[2]) # get the salt from the database
         hash = hashlib.pbkdf2_hmac('sha256',password.encode('utf-8'),salt,100000) # generate a hash from the password and salt using 100,000 iterations of SHA256
         if hash.hex() == user[1]: # if the generated hash is the same as the stored hash, the password was correct
-            bestScore = user[3] # store the user's best score information
+            bestScore = int(user[3]) # store the user's best score information
             break # if the password was correct, we're done and the user is authenticated
         else:
             print('Incorrect password.')
@@ -60,14 +60,15 @@ del(user) # we don't need this any more
 
 ## game routine
 attempts = 0 # set counter to enter while loop [in another programming language, a REPEAT...UNTIL or equivalent loop would be most appropriate as this would not have to be defined twice]
-while not(attempts >= ATTEMPTS): # halt executuion if attemp cap exceeded (2nd test)
+score = 0 # counter for the user's score
+while not(attempts >= ATTEMPTS): # halt executuion if attempt cap exceeded (2nd test)
     attempts = 0 # reset counter for each new song
     song = random.choice(songs) # select a random song
     print('Guess the song!')
     blankName = firstLetter(song[0]) # blank out part of the name of the song
-    while not(attempts >= ATTEMPTS): # halt executuion if attemp cap exceeded (1st test)
+    while not(attempts >= ATTEMPTS): # halt executuion if attempt cap exceeded (1st test)
         if attempts > 0:
-            print('Try again.')
+            print('Try again.') # if the user has still got attempts left, this will be shown
         print('Artist: '+song[1])
         print('Song: '+blankName) # display a blanked out song name
         guess = input() # FUTURE: add fancy overwriting input?
@@ -75,4 +76,13 @@ while not(attempts >= ATTEMPTS): # halt executuion if attemp cap exceeded (2nd t
             print('Well done!')
             break # drop out of loop on correct attempt and pick new song
         else:
+            print('Incorrect.')
             attempts += 1 # ONLY increase counter if attempt failed
+    score += 1+ATTEMPTS-attempts # the score is increased by the number of attempts the user had remainaing
+
+# at this point, the game is finished
+print('Game over!')
+print('You scored: '+str(score))
+if score > bestScore:
+    print('New high score!!')
+    bestScore = score
