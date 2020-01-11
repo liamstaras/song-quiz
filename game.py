@@ -12,6 +12,13 @@ import hashlib
 ATTEMPTS = 2 # how many guesses the user gets for each song
 BLANKING = None # what to replace removed characters with in the name
 
+# check file prescence
+if not os.path.exists('users.csv'):
+    print('Warning! - no users database found. Creating...')
+    with open('users.csv','w') as csvfile:
+        csv.writer(csvfile).writerow(['username','hash','salt','score'])
+
+
 ## functions
 # firstLetter function - get the first letter of each word
 def firstLetter(phrase, fill=BLANKING):
