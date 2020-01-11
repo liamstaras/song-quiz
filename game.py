@@ -1,41 +1,41 @@
-#### Music quiz for OCR GCSE Computer Science (9-1) ####
+#### Exemplar music quiz for OCR GCSE Computer Science (9-1) ####
 ### Copyright 2020 Liam Staras ###
 
 ## initialization
 # import required libraries
-import csv
-import random
-import os
-import hashlib
+import csv # needed for... err... CSVs
+import random # you guessed it - or not
+import os # a nice wrapper for cross-platform code
+import hashlib # for making a hash of passwords
 
 # define constants
 ATTEMPTS = 2 # how many guesses the user gets for each song
 BLANKING = None # what to replace removed characters with in the name
 
 # create user database if nonexistant
-if not os.path.exists('users.csv'):
+if not os.path.exists('users.csv'): # check if the database is present
     print('Warning! - no users database found. Creating...')
     with open('users.csv','w') as csvfile:
-        csv.writer(csvfile).writerow(['username','hash','salt','score'])
+        csv.writer(csvfile).writerow(['username','hash','salt','score']) # write a header row - not actually used for anything
 
 # read song database from csv
-if os.path.exists('songs.csv'):
+if os.path.exists('songs.csv'): # test existance of a custom song list
     with open('songs.csv') as csvfile:
         songs = list(csv.reader(csvfile))[1:] # actually read in the songs, skip header row
-elif os.path.exists('songs.csv.default'):
+elif os.path.exists('songs.csv.default'): # if no custom file exists, fall back to default
     print('Warning! - no song database found. Using default...')
     with open('songs.csv.default') as csvfile:
         songs = list(csv.reader(csvfile))[1:] # actually read in the songs, skip header row
-else:
+else: # at this point, no songs have been found and there is no point in continuing
     print('ERROR! - no custom or default song database found. Aborting...')
-    raise SystemExit
+    raise SystemExit # drop out of program
 
 ## functions
 # firstLetter function - get the first letter of each word
-def firstLetter(phrase, fill=BLANKING):
-    if fill == None:
+def firstLetter(phrase, fill=BLANKING): # takes in a phrase and a keep only the first letter, optionally replacing omitted characters with blanking
+    if fill == None: # use of NoneType as definition for "no blanking"
         fill = ''
-    return ' '.join([word[0] + fill*(len(word)-1) for word in phrase.split(' ')])
+    return ' '.join([word[0] + fill*(len(word)-1) for word in phrase.split(' ')]) # split the word by spaces, keep the first character, replace the rest, reinstate spaces
 
 ## main program
 ## authentication subsystem
@@ -66,12 +66,19 @@ else: # otherwise, we create a new user
     hash = hashlib.pbkdf2_hmac('sha256',password.encode('utf-8'),salt,100000) # generate a hash from the password and salt using 100,000 iterations of SHA256
     with open('users.csv','a') as csvfile: # open the user database in append mode
         csv.writer(csvfile).writerow([username,hash.hex(),salt.hex(),0]) # write one row to the end of the csv with the username, the hex of the hash and salt, and a best score of 0
+
+USERNAME = username # set in stone [all caps defines a constant]
+
+# clear variables used in the authentication process [safety first kids]
+
 del(password) # delete the password variable - get it out of RAM!
 del(user) # we don't need this any more
 del(users) # same here
+del(username) # replaced by constant
 
-# at this point, we have the variable 'username' as the username of the authenticated user and we can begin the game
-# we also have 'bestScore' as the top score for the authenticated user
+
+# at this point, we have the constant 'USERNAME' as the username of the authenticated user and we can begin the game
+# we also have 'bestScore' as the top score so far for the authenticated user
 
 ## game routine
 attempts = 0 # set counter to enter while loop [in another programming language, a REPEAT...UNTIL or equivalent loop would be most appropriate as this would not have to be defined twice]
@@ -112,7 +119,7 @@ with open('users.csv') as csvfile:
     users = list(csv.reader(csvfile))
 # locate and update the user in the array
 for user in users[1:]:
-    if user[0] == username: # comparing each row from the csv
+    if user[0] == USERNAME: # comparing each row from the csv
         user[3] = bestScore # update the best score in the array
         break # we don't need to check any more users if one is found
 # write the array back to the file
@@ -124,3 +131,5 @@ print('HIGH SCORES')
 scorers = [[int(user[3]),user[0]] for user in users[1:]] # get all scores in to a list
 for idx, scorer in enumerate(sorted(scorers,reverse=True)[:5]): # sort the list and select the first five elements
     print(str(idx+1)+'. '+str(scorer[1])+': '+str(scorer[0])) # display the name and score
+
+# and we're done.
