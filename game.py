@@ -12,12 +12,23 @@ import hashlib
 ATTEMPTS = 2 # how many guesses the user gets for each song
 BLANKING = None # what to replace removed characters with in the name
 
-# check file prescence
+# create user database if nonexistant
 if not os.path.exists('users.csv'):
     print('Warning! - no users database found. Creating...')
     with open('users.csv','w') as csvfile:
         csv.writer(csvfile).writerow(['username','hash','salt','score'])
 
+# read song database from csv
+if os.path.exists('songs.csv'):
+    with open('songs.csv') as csvfile:
+        songs = list(csv.reader(csvfile))[1:] # actually read in the songs, skip header row
+elif os.path.exists('songs.csv.default'):
+    print('Warning! - no song database found. Using default...')
+    with open('songs.csv.default') as csvfile:
+        songs = list(csv.reader(csvfile))[1:] # actually read in the songs, skip header row
+else:
+    print('ERROR! - no custom or default song database found. Aborting...')
+    raise SystemExit
 
 ## functions
 # firstLetter function - get the first letter of each word
@@ -25,10 +36,6 @@ def firstLetter(phrase, fill=BLANKING):
     if fill == None:
         fill = ''
     return ' '.join([word[0] + fill*(len(word)-1) for word in phrase.split(' ')])
-
-# read song database from csv
-with open('songs.csv') as csvfile:
-    songs = list(csv.reader(csvfile))[1:] # actually read in the songs, skip header row
 
 ## main program
 ## authentication subsystem
